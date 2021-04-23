@@ -62,5 +62,5 @@ resource "aws_vpc" "myvpc" {
 
 #print output value resourcetype.name.id
 output "myoutput" {
-    value = aws_vpc.clustername.id
+    value = aws_vpc.myvpc.id
 }
