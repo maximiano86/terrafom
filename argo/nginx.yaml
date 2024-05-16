@@ -2,7 +2,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: my-nginx
-  namespace: argocd
 data:  
   nginx.conf: |
     events {}
@@ -11,8 +10,8 @@ data:
         server {
             listen 8080;
             location / {
-                set_by_lua \$my_secret 'return os.getenv("MY_SECRET")';
-                return 200 \$my_secret;
+                set_by_lua $my_secret 'return os.getenv("MY_SECRET")';
+                return 200 $my_secret;
             }
         }
     }
@@ -21,10 +20,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: my-nginx
-  namespace: argocd
   annotations:
-
-    # Our special annotation to tell AVP where the secrets are
     avp.kubernetes.io/path: "secret/data/my-nginx"
 stringData:  
   MY_SECRET: <password>
@@ -33,20 +29,27 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: my-nginx
-  namespace: argocd
 spec:
   selector:
     matchLabels:
       app: nginx
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
         app: nginx
     spec:
+      serviceAccountName: default
+      automountServiceAccountToken: true
       containers:
       - name: nginx
-        image: openresty/openresty:1.19.9.1-0-alpine
+        image: docker.io/openresty/openresty:1.19.9.1-0-alpine
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
         envFrom:
@@ -59,3 +62,15 @@ spec:
         - name: nginx-conf
           configMap:
             name: my-nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 8088
+      targetPort: 8080
