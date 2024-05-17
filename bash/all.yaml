@@ -1,20 +1,16 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
-  name: bash
+  name: shell-demo
 spec:
-  selector:
-    matchLabels:
-      app: bash
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: bash
-    spec:
-      serviceAccountName: default
-      automountServiceAccountToken: true
-      containers:
-      - name: bash
-        image: bash
-        imagePullPolicy: IfNotPresent
+  volumes:
+  - name: shared-data
+    emptyDir: {}
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - name: shared-data
+      mountPath: /usr/share/nginx/html
+  hostNetwork: true
+  dnsPolicy: Default
