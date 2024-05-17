@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bash
+spec:
+  selector:
+    matchLabels:
+      app: bash
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      containers:
+      - name: bash
+        image: bash
+        imagePullPolicy: IfNotPresent
