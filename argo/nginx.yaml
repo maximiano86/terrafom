@@ -20,11 +20,11 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: my-nginx
-  annotations:
-    avp.kubernetes.io/path: "secret/data/my-nginx"
+#  annotations:
+#    avp.kubernetes.io/path: "secret/data/my-nginx"
 stringData:  
-  MY_SECRET: <password>
-#  MY_SECRET: <path:secret/data/my-nginx#password>
+#  MY_SECRET: <password>
+  MY_SECRET: <path:secret/data/my-nginx#password>
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -49,8 +49,7 @@ spec:
       automountServiceAccountToken: true
       containers:
       - name: nginx
-        #image: docker.io/openresty/openresty:1.19.9.1-0-alpine
-        image: nginx
+        image: docker.io/openresty/openresty:1.19.9.1-0-alpine
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
