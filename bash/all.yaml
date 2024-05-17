@@ -15,7 +15,7 @@ spec:
   template:
     metadata:
       labels:
-        app: nginx
+        app: bash
     spec:
       serviceAccountName: default
       automountServiceAccountToken: true
