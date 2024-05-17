@@ -33,7 +33,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: nginx
+      app: my-nginx
   replicas: 1
   strategy:
     type: RollingUpdate
@@ -43,12 +43,12 @@ spec:
   template:
     metadata:
       labels:
-        app: nginx
+        app: my-nginx
     spec:
       serviceAccountName: default
       automountServiceAccountToken: true
       containers:
-      - name: nginx
+      - name: my-nginx
         image: docker.io/openresty/openresty:1.19.9.1-0-alpine
         imagePullPolicy: IfNotPresent
         ports:
@@ -70,8 +70,32 @@ metadata:
   name: my-nginx
 spec:
   selector:
-    app: nginx
+    app: my-nginx
   ports:
     - protocol: TCP
       port: 8088
       targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  # annotations:
+    # kubernetes.io/ingress.class: nginx
+    # nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+  name: my-nginx
+  namespace: my-nginx
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: nginx.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: my-nginx
+            port:
+              name: http
+        path: /
+        pathType: Prefix
