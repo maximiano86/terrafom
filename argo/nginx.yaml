@@ -20,10 +20,11 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: my-nginx
-  annotations:
-    avp.kubernetes.io/path: "secret/data/my-nginx"
+#  annotations:
+#    avp.kubernetes.io/path: "secret/data/my-nginx"
 stringData:  
-  MY_SECRET: <password>
+#  MY_SECRET: <password>
+  MY_SECRET: <path:secret/data/my-nginx#password>
 ---
 apiVersion: apps/v1
 kind: Deployment
